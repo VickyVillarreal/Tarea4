@@ -1,4 +1,4 @@
-package com.example.jorgeurrea.tarea4;
+package com.iteso.sesion13_scrollabletab;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -9,17 +9,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.jorgeurrea.tarea4.Beans.ItemProduct;
+import com.iteso.sesion13_scrollabletab.Beans.itemProduct;
+import com.iteso.sesion13_scrollabletab.database.DataBaseHandler;
+import com.iteso.sesion13_scrollabletab.database.ItemProductControl;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 
 
-
 public class FragmentTechnology extends android.support.v4.app.Fragment {
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private ArrayList<ItemProduct> productstech;
+    private ArrayList<itemProduct> productstech;
 
     public FragmentTechnology() {}
 
@@ -36,21 +37,10 @@ public class FragmentTechnology extends android.support.v4.app.Fragment {
         recyclerView.setLayoutManager(mLayoutManager);
 
 
-        productstech= new ArrayList<ItemProduct>();
-        productstech.add(new ItemProduct(getString(R.string.title_item1),
-                getString(R.string.store_item1), getString(R.string.location_item1),
-                getString(R.string.phone_item1),getString(R.string.description_item1),
-                0, 0 ,0));
-
-        productstech.add(new ItemProduct(getString(R.string.title_item2),
-                getString(R.string.store_item2), getString(R.string.location_item2),
-                getString(R.string.phone_item2),getString(R.string.description_item2),
-                1, 1,1 ));
-
-        productstech.add(new ItemProduct(getString(R.string.title_item3),
-                getString(R.string.store_item3), getString(R.string.location_item3),
-                getString(R.string.phone_item3),getString(R.string.description_item3),
-                2, 2,2 ));
+        productstech= new ArrayList<itemProduct>();
+        ItemProductControl itemProductControl = new ItemProductControl();
+        productstech = itemProductControl.getItemProductsByCategory(
+                0, DataBaseHandler.getInstance(getActivity()));
 
         mAdapter = new AdapterProduct(getActivity(), productstech);
         recyclerView.setAdapter(mAdapter);
@@ -58,17 +48,21 @@ public class FragmentTechnology extends android.support.v4.app.Fragment {
     }
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        ItemProduct itemProduct = data.getParcelableExtra("ITEM");
-        Iterator<ItemProduct> iterator = productstech.iterator();
+        itemProduct itemProduct = data.getParcelableExtra("ITEM");
+        Iterator<itemProduct> iterator = productstech.iterator();
         int position = 0;
         while(iterator.hasNext()){
-            ItemProduct item = iterator.next();
+            itemProduct item = iterator.next();
             if(item.getCode() == itemProduct.getCode()){
                 productstech.set(position, itemProduct);
                 break;
             }
             position++;
         }
+        mAdapter.notifyDataSetChanged();
+    }
+    public void notifyDataSetChanged(itemProduct itemProduct){
+        productstech.add(itemProduct);
         mAdapter.notifyDataSetChanged();
     }
 

@@ -1,82 +1,126 @@
-package com.example.jorgeurrea.tarea4;
+package com.iteso.sesion13_scrollabletab;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 
-import com.example.jorgeurrea.tarea4.Beans.ItemProduct;
+import com.iteso.sesion13_scrollabletab.Beans.Category;
+import com.iteso.sesion13_scrollabletab.Beans.Store;
+import com.iteso.sesion13_scrollabletab.Beans.itemProduct;
+import com.iteso.sesion13_scrollabletab.database.CategoryControl;
+import com.iteso.sesion13_scrollabletab.database.DataBaseHandler;
+import com.iteso.sesion13_scrollabletab.database.ItemProductControl;
+import com.iteso.sesion13_scrollabletab.database.StroreControl;
+
+import java.util.ArrayList;
 
 public class ActivityProduct extends AppCompatActivity {
-    EditText title, store,location, phone;
-    ImageView image;
-    ItemProduct itemProduct, productItem;
-    Button save, cancel;
-
+  /*  protected Spinner stores;
+    protected Spinner categories;
+    protected Spinner images;
+    protected EditText id;
+    protected EditText title;
+    protected EditText description;
+    protected ArrayAdapter<Store> storesAdapter;
+    protected ArrayAdapter<Category> categoriesAdapter;
+    protected ArrayAdapter<String> imagesAdapter;
+    protected DataBaseHandler dh; //DataBase Instance
+    protected Store storeSelected; //Store selected in spinner
+    protected Category categorySelected; //Category selected in spinner
+    protected int imageSelected; //Image selected in spinner
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_product);
+        storeSelected = null;
+        categorySelected = null;
+        imageSelected = -1;
+//DataBase Objects
+        dh = DataBaseHandler.getInstance(this);
+        StroreControl storeControl = new StroreControl();
+        CategoryControl categoryControl = new CategoryControl();
+//Fill info from Database
+        ArrayList<Store> storesList = storeControl.getStores( dh);
+        ArrayList<Category> categoriesList = categoryControl.getCategories(dh);
+//Create Adapter to show into Spinner, ListView or GridLayout
+        storesAdapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, storesList);
+        stores.setAdapter(storesAdapter);
+        categoriesAdapter =
+                new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, categoriesList);
+        categories.setAdapter(categoriesAdapter);
+        ArrayList<String> myimages = new ArrayList<>();
+        myimages.add("Mac"); myimages.add("Alienware");
+        imagesAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, myimages);
+        images.setAdapter(imagesAdapter);
+        stores.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                storeSelected = storesAdapter.getItem(position);
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
+        images.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                imageSelected = position;
+            }
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+        });
 
-        title = (EditText) findViewById(R.id.activity_product_title);
-        store = (EditText) findViewById(R.id.activity_product_store);
-        location = (EditText) findViewById(R.id.activity_product_location);
-        image = (ImageView) findViewById(R.id.activity_product_image);
-        save = findViewById(R.id.activity_product_save);
-        cancel = findViewById(R.id.activity_product_cancel);
-        phone = findViewById(R.id.activity_product_phone);
-
-
-        if(getIntent().getExtras() != null) {
-            itemProduct = getIntent().getParcelableExtra("ITEM");
-            if (itemProduct != null) {
-                title.setText(itemProduct.getTitle());
-                store.setText(itemProduct.getStore());
-                location.setText(itemProduct.getLocation());
-                phone.setText(itemProduct.getPhone());
-                switch (itemProduct.getImage()) {
-                    case 0:
-                        image.setImageResource(R.drawable.mac);
-                        break;
-                    case 1:
-                        image.setImageResource(R.drawable.alienware);
-                        break;
-                    case 2:
-                        image.setImageResource(R.drawable.lanix);
-                        break;
+        public void setCategorySelected(int categoryId){
+            for (int position = 0; position < categoriesAdapter.getCount(); position++)
+            {
+                if(categoryId == ((Category) categoriesAdapter.getItem(position)).getIdCategory())
+                {
+                    categories.setSelection(position);
+                    return;
                 }
             }
         }
-
-        cancel.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                setResult(RESULT_CANCELED);
-                finish();
+    public void setStoreSelected(int storeId){
+        for (int position = 0; position < storesAdapter.getCount(); position++)
+        {
+            if(((Store)storesAdapter.getItem(position)).getId() == storeId)
+            {
+                stores.setSelection(position);
+                return;
             }
-        });
-
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                productItem = new ItemProduct();
-                productItem.setTitle(title.getText().toString());
-                productItem.setStore(store.getText().toString());
-                productItem.setLocation(location.getText().toString());
-                productItem.setPhone(phone.getText().toString());
-                productItem.setCode(itemProduct.getCode());
-                productItem.setImage(itemProduct.getImage());
-
-                Intent intent = new Intent();
-                intent.putExtra("ITEM", productItem);
-                setResult(Activity.RESULT_OK, intent);
-                finish();
-            }
-        });
-
+        }
     }
+    public void setImageSelected(int imageId){
+        images.setSelection(imageId);
+    }
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.activity_product_search:
+                int idProduct = 0;
+                try {
+                    idProduct = Integer.parseInt(id.getText().toString().trim());
+                }catch(NumberFormatException e){ return; }
+                ItemProductControl itemProductControl = new ItemProductControl();
+                itemProduct itemProduct = itemProductControl.getProductById(idProduct, dh);
+                if(itemProduct != null) {
+                    title.setText(itemProduct.getTitle());
+                    description.setText(itemProduct.getDescription());
+                    if(itemProduct.getCategory() != null) {
+                        setCategorySelected(itemProduct.getCategory().getIdCategory());}
+                    if(itemProduct.getStore()!= null) {
+                        setStoreSelected(itemProduct.getStore().getId());}
+                    setImageSelected(itemProduct.getImage());
+                }
+                break;
+        }
+    }*/
+
 }

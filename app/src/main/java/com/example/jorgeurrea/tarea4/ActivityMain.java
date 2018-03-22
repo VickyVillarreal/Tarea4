@@ -1,32 +1,32 @@
-package com.example.jorgeurrea.tarea4;
+package com.iteso.sesion13_scrollabletab;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
-
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 
-
-import com.example.jorgeurrea.tarea4.Beans.ItemProduct;
+import com.iteso.sesion13_scrollabletab.Beans.itemProduct;
 
 import java.util.ArrayList;
 
 public class ActivityMain extends AppCompatActivity {
+
+    FragmentTechnology fragmentTechnology;
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -49,7 +49,7 @@ public class ActivityMain extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        TabLayout tabLayout = (TabLayout)findViewById(R.id.tabs);
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
 
         setSupportActionBar(toolbar);
         // Create the adapter that will return a fragment for each of the three
@@ -65,11 +65,10 @@ public class ActivityMain extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Vicky Villarreal", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                Intent intent = new Intent(ActivityMain.this, ActivityItem.class);
+                startActivity(intent);
             }
         });
-
     }
 
 
@@ -88,8 +87,25 @@ public class ActivityMain extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
+        if(id == R.id.activity_privacy_policy_webview){
+            Intent intent = new Intent(ActivityMain.this,
+                    ActivityPrivacyPolicy.class);
+            startActivity(intent);
+        }
+
+        if (id == R.id.action_logOut) {
+            SharedPreferences sharedPreferences = getSharedPreferences(
+                    "com.iteso.USER_PREFERENCES", MODE_PRIVATE);
+            SharedPreferences.Editor editor = sharedPreferences.edit();
+            editor.clear();
+            editor.apply();
+
+            Intent intent = new Intent(ActivityMain.this,
+                    ActivityLogin.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP
+                    | Intent.FLAG_ACTIVITY_NEW_TASK);
+            startActivity(intent);
+            finish();
         }
 
         return super.onOptionsItemSelected(item);
@@ -104,6 +120,9 @@ public class ActivityMain extends AppCompatActivity {
          * fragment.
          */
         private static final String ARG_SECTION_NUMBER = "section_number";
+
+        public PlaceholderFragment() {
+        }
 
         /**
          * Returns a new instance of this fragment for the given section
@@ -120,29 +139,17 @@ public class ActivityMain extends AppCompatActivity {
         @Override
         public View onCreateView(LayoutInflater inflater, ViewGroup container,
                                  Bundle savedInstanceState) {
-
             View rootView = inflater.inflate(R.layout.fragment_activity_main, container, false);
             RecyclerView recyclerView = rootView.findViewById(R.id.fragment_recycler_view);
 
-            LinearLayoutManager miLayoutManager = new LinearLayoutManager(getActivity());
-            recyclerView.setLayoutManager(miLayoutManager);
+            LinearLayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+            recyclerView.setLayoutManager(mLayoutManager);
 
-            ArrayList<ItemProduct> products = new ArrayList<>();
-
+            ArrayList<itemProduct> products = new ArrayList<>();
             AdapterProduct adapterProduct = new AdapterProduct(getActivity(), products);
             recyclerView.setAdapter(adapterProduct);
+
             return rootView;
-        }
-    }
-
-    FragmentTechnology fragmentTechnology;
-
-
-    public void onActivityResult(int requestCode,int resultCode, Intent data){
-        if(requestCode == 0 ||requestCode == 1|| requestCode ==  2){
-            if(resultCode == Activity.RESULT_OK){
-                fragmentTechnology.onActivityResult(requestCode, resultCode, data);
-            }
         }
     }
 
@@ -158,10 +165,9 @@ public class ActivityMain extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            // getItem is called to instantiate the fragment for the given page.
-            switch (position){
+            switch (position) {
                 case 0:
-                    if( fragmentTechnology== null){
+                    if(fragmentTechnology == null){
                         fragmentTechnology = new FragmentTechnology();
                     }
                     return fragmentTechnology;
@@ -171,9 +177,7 @@ public class ActivityMain extends AppCompatActivity {
                     return new FragmentElectronics();
                 default:
                     return new FragmentTechnology();
-
             }
-
         }
 
         @Override
@@ -182,13 +186,23 @@ public class ActivityMain extends AppCompatActivity {
             return 3;
         }
 
-        public CharSequence getPageTitle(int position){
+        @Override
+        public CharSequence getPageTitle(int position) {
             switch (position){
-                case 0: return getString(R.string.title_section1).toUpperCase();
-                case 1: return getString(R.string.title_section2).toUpperCase();
-                case 2: return  getString(R.string.title_section3).toUpperCase();
+                case 0 : return "Technology";
+                case 1 : return "Home";
+                case 2 : return "Electronics";
             }
             return null;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == 0 || requestCode == 1 || requestCode == 2){
+            if(resultCode == Activity.RESULT_OK){
+                fragmentTechnology.onActivityResult(requestCode, resultCode, data);
+            }
         }
     }
 }

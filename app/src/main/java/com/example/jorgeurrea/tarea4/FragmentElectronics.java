@@ -1,4 +1,5 @@
-package com.example.jorgeurrea.tarea4;
+package com.iteso.sesion13_scrollabletab;
+
 
 import android.os.Bundle;
 import android.app.Fragment;

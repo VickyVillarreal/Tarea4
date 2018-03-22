@@ -1,5 +1,4 @@
-package com.example.jorgeurrea.tarea4;
-
+package com.iteso.sesion13_scrollabletab;
 
 import android.content.Context;
 import android.content.Intent;
@@ -14,23 +13,22 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.jorgeurrea.tarea4.Beans.ItemProduct;
+import com.iteso.sesion13_scrollabletab.Beans.itemProduct;
 
 import java.util.ArrayList;
 
 /**
- * Created by Jorge Urrea on 06/03/2018.
+ * Created by Jorge Urrea on 26/02/2018.
  */
 
-
 public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ViewHolder> {
-    private ArrayList<ItemProduct> mDataSet;
+    private ArrayList<itemProduct> mDataSet;
     private Context context;
 
 
-    public AdapterProduct(Context context, ArrayList<ItemProduct> myDataSet) {
+    public AdapterProduct(Context context, ArrayList<itemProduct> myDataSet) {
         mDataSet = myDataSet;
-        this.context = context;//aris was here
+        this.context = context;
     }
 
     @Override
@@ -67,23 +65,23 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ViewHold
 
     public void onBindViewHolder(final ViewHolder holder, final int position) {
 
-        holder.mProductTitle.setText(mDataSet.get(position).getTitle());
-        holder.mProductStore.setText(mDataSet.get(position).getStore());
-        holder.mProductLocation.setText(mDataSet.get(position).getLocation());
-        holder.mProductPhone.setText(mDataSet.get(position).getPhone());
+        holder.mProductStore.setText(mDataSet.get(position).getStore().getName());
+        holder.mProductLocation.setText(
+                mDataSet.get(position).getStore().getCity().getName() + ", Jalisco");
+        holder.mProductPhone.setText(mDataSet.get(position).getStore().getPhone());
         switch(mDataSet.get(position).getImage()){
-            case 0:
-                holder.mProductImage.setImageResource(R.drawable.mac); break;
-            case 1:
-                holder.mProductImage.setImageResource(R.drawable.alienware); break;
-            case 2:
-                holder.mProductImage.setImageResource(R.drawable.lanix);break;
-        }
+                case 0:
+                    holder.mProductImage.setImageResource(R.drawable.mac); break;
+                case 1:
+                    holder.mProductImage.setImageResource(R.drawable.alienware); break;
+                case 2:
+                    holder.mProductImage.setImageResource(R.drawable.lanix);break;
+            }
 
-        switch (mDataSet.get(position).getThumbnail()){
+            switch (mDataSet.get(position).getThumbnail()){
             case 0:
                 holder.mProductThumbnail.setImageResource(R.drawable.bestbuy);
-                break;
+                 break;
             case 1:
                 holder.mProductThumbnail.setImageResource(R.drawable.dell);
                 break;
@@ -95,18 +93,19 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ViewHold
 
         holder.mProductPhone.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Intent call = new Intent (Intent.ACTION_DIAL, Uri.parse("tel: "+
-                        mDataSet.get(position).getPhone()));
-                context.startActivity(call);
+            public void onClick(View v) {
+                Intent intent = new Intent(Intent.ACTION_DIAL,
+                        Uri.parse("tel:" + mDataSet.get(position).getStore().getPhone()));
+                context.startActivity(intent);
             }
         });
+
 
         holder.mEventLayout.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View view) {
-                ItemProduct productItem = new ItemProduct();
+                itemProduct productItem = new itemProduct();
                 productItem.setTitle(mDataSet.get(position).getTitle());
                 productItem.setStore(mDataSet.get(position).getStore());
                 productItem.setPhone(mDataSet.get(position).getPhone());
@@ -128,3 +127,4 @@ public class AdapterProduct extends RecyclerView.Adapter<AdapterProduct.ViewHold
 
 
 }
+

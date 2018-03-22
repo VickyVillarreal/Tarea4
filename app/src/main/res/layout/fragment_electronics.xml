@@ -3,13 +3,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.example.jorgeurrea.tarea4.FragmentElectronics">
+    tools:context="com.iteso.sesion13_scrollabletab.FragmentElectronics">
 
     <!-- TODO: Update blank fragment layout -->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/fragment_electronics_text"
+        android:text="E L E C T R O N I C S"
         android:layout_gravity="center"
         android:gravity="center"/>
 
